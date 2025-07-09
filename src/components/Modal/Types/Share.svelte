@@ -1,3 +1,8 @@
+<script context="module">
+	// 这个变量只要页面不刷新就会一直存在
+	export let hasShareMountedGlobal = false;
+</script>
+
 <script>
 	import { onMount } from 'svelte';
 	import { BASE_URL } from '@sudoku/constants';
@@ -24,6 +29,9 @@
 	}
 
 	onMount(() => {
+		if (hasShareMountedGlobal) return;
+		hasShareMountedGlobal = true;
+
 		let canShare = false;
 		const shareData = {
 			url: link,
@@ -34,11 +42,9 @@
 		if ('share' in navigator) {
 			canShare = true;
 		}
-
 		if ('canShare' in navigator) {
 			canShare = navigator.canShare(shareData);
 		}
-
 		if (canShare) {
 			navigator.share(shareData);
 		}
