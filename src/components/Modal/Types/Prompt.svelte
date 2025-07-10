@@ -18,7 +18,7 @@
 
 {#if data.options}
 	<select class="input mb-5" id="prompt-select" bind:value>
-		<option value="" disabled selected>请选择</option>
+		<option value="" disabled selected>Please Select</option>
 		{#each data.options as option}
 			<option value={option}>{option}</option>
 		{/each}

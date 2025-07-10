@@ -73,9 +73,9 @@
 		// 等待数据加载
 		if (exampleNames.length === 0) {
 			modal.show('confirm', {
-				title: '加载中',
-				text: '正在加载题库，请稍候...',
-				button: '确定',
+				title: 'Loading',
+				text: 'Loading, please wait...',
+				button: 'Sure',
 				onHide: game.resume
 			});
 			return;
@@ -85,10 +85,10 @@
 		let selected = null;
 		await new Promise((resolve) => {
 			modal.show('prompt', {
-				title: '选择数独题目',
-				text: '请选择一个数独题目名称：',
+				title: 'Select sudoku',
+				text: 'select one you like',
 				options: exampleNames, // 传递选项
-				button: '确定',
+				button: 'Sure',
 				onHide: game.resume,
 				callback: (value) => {
 					selected = value;
@@ -107,9 +107,9 @@
 			
 		} catch (error) {
 			modal.show('confirm', {
-				title: '获取失败',
-				text: `获取数独题目失败：${error.message}`,
-				button: '确定',
+				title: 'Fail',
+				text: `fail to get sudoku:${error.message}`,
+				button: 'Sure',
 				onHide: game.resume
 			});
 		}

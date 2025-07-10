@@ -53,5 +53,6 @@
 <input id="sencode" class="input font-mono mb-5" bind:value={sencode} type="text">
 
 <div class="flex justify-end">
-	<button class="btn btn-small btn-primary" disabled={buttonDisabled} on:click={handleStart}>Start</button>
+	<button class="btn btn-small btn-primary mr-8" on:click={() => window.open('https://sudoku.com/sudoku-rules/', '_blank')}>Learn</button>
+	<button class="btn btn-small btn-primary animate-pulse" style="box-shadow:0 0 0 3px #ffd700;" disabled={buttonDisabled} on:click={handleStart}>Start</button>
 </div>

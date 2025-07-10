@@ -41,19 +41,8 @@
             // 新增：净化 userGrid，避免错误答案影响提示
             const cleanGrid = getCleanUserGrid(userGridData, $invalidCells);
 
-            // 检查是否有选中格子
-            if ($cursor.x !== null && $cursor.y !== null) {
-                // 如果选中的格子已有数字，直接寻找下一个可提示的格子
-                if (cleanGrid[$cursor.y][$cursor.x] !== 0) {
-                    hint = findNextHint(cleanGrid, null, null);
-                } else {
-                    // 获取选中格子的提示
-                    hint = findNextHint(cleanGrid, $cursor.x, $cursor.y);
-                }
-            } else {
-                // 没有选中格子，自动寻找可填入答案的格子
-                hint = findNextHint(cleanGrid, null, null);
-            }
+            hint = findNextHint(cleanGrid, null, null);
+            
             if (hint) {
                 // 移动光标到提示的格子
                 cursor.set(hint.x, hint.y);
@@ -80,9 +69,9 @@
 
                         // 显示策略提示
                         modal.show('confirm', {
-                            title: strategies[hint.strategy]?.name || "提示",
+                            title: strategies[hint.strategy]?.name || "Hint",
                             text: hint.explanation,
-                            button: "明白了"
+                            button: "Sure"
                         });
                     } else {
                         // 有多个候选值，显示提示但不自动填入
@@ -90,21 +79,21 @@
                             // 构建友好的提示信息
                             let notesTip = "";
                             if (!$notes) {
-                                notesTip = "您可以点击右下角的笔记按钮 ✏️，然后输入这些数字来标记候选值。";
+                                notesTip = "You can click the notes button ✏️ at the bottom right, then enter these numbers to mark candidates.";
                             } else {
-                                notesTip = "笔记模式已开启 ✅，您现在可以直接输入这些数字来标记候选值。";
+                                notesTip = "Notes mode is ON ✅, you can directly enter these numbers to mark candidates.";
                             }
 
                             modal.show('confirm', {
-                                title: "当前无法确定该格的答案 🤔",
-                                text: `在第${hint.y + 1}行第${hint.x + 1}列可填入的候选值有: ${hint.candidates.join(', ')}\n\n${hint.explanation}\n\n${notesTip}`,
-                                button: "明白了"
+                                title: "Cannot determine the answer for this cell 🤔",
+                                text: `Candidates for row ${hint.y + 1}, column ${hint.x + 1}: ${hint.candidates.join(', ')}\n\n${hint.explanation}\n\n${notesTip}`,
+                                button: "Sure"
                             });
                         } else {
                             modal.show('confirm', {
-                                title: "提示",
-                                text: "无法为此格子提供候选值。",
-                                button: "确定"
+                                title: "Hint",
+                                text: "No candidates available for this cell.",
+                                button: "OK"
                             });
                             return;
                         }
@@ -112,9 +101,9 @@
                 }
             } else {
                 modal.show('confirm', {
-                    title: "提示",
-                    text: "没有找到可提示的格子。",
-                    button: "确定"
+                    title: "Hint",
+                    text: "No cell available for hint.",
+                    button: "OK"
                 });
                 return;
             }
@@ -122,11 +111,11 @@
             // 消耗一个提示次数
             hints.use();
         } catch (error) {
-            console.error("提示功能出错:", error);
+            console.error("Hint error:", error);
             modal.show('confirm', {
-                title: "提示错误 ⚠️",
-                text: `提供提示时发生错误: ${error.message || "请稍后重试"}`,
-                button: "确定"
+                title: "Hint Error ⚠️",
+                text: `An error occurred while providing a hint: ${error.message || "Please try again later"}`,
+                button: "OK"
             });
         }
     }
@@ -137,9 +126,9 @@
         const currentBranch = $backtrack.currentBranch;
         if (!currentBranch) {
             modal.show('confirm', {
-                title: "回溯",
-                text: "没有可用的回溯点。",
-                button: "确定"
+                title: "Backtrack",
+                text: "No available backtrack point.",
+                button: "OK"
             });
             return;
         }
@@ -157,7 +146,7 @@
         class="btn btn-round"
         disabled={$gamePaused}
         on:click={handleBacktrack}
-        title="回溯">
+        title="Backtrack">
         <svg class="icon-outline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a10 10 0 1 1 -2 4 m2 -4 l6 2m-6-2l2 -6"/>
         </svg>
@@ -167,7 +156,7 @@
       class="btn btn-round"
       disabled={$gamePaused}
       on:click={handleUndo}
-      title="前进">
+      title="Undo">
         <svg class="icon-outline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
         </svg>
@@ -177,13 +166,13 @@
       class="btn btn-round"
       disabled={$gamePaused}
       on:click={handleRedo}
-      title="后退">
+      title="Redo">
         <svg class="icon-outline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 10h-10a8 8 90 00-8 8v2M21 10l-6 6m6-6l-6-6" />
         </svg>
     </button>
 
-    <button class="btn btn-round btn-badge" disabled={$gamePaused || !hintsAvailable} on:click={handleHint} title="提示">
+    <button class="btn btn-round btn-badge" disabled={$gamePaused || !hintsAvailable} on:click={handleHint} title="Hint">
         <svg class="icon-outline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
         </svg>
