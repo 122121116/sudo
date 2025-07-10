@@ -8,14 +8,13 @@
 	export let cellX;
 	export let cellY;
 	export let candidates;
+
 	export let disabled;
 	export let conflictingNumber;
 	export let userNumber;
 	export let selected;
 	export let sameArea;
 	export let sameNumber;
-	export let unsolvableNumber = false;
-	export let wrongNumber = false;
 
 	const borderRight = (cellX !== SUDOKU_SIZE && cellX % 3 !== 0);
 	const borderRightBold = (cellX !== SUDOKU_SIZE && cellX % 3 === 0);
@@ -27,9 +26,7 @@
      class:border-r={borderRight}
      class:border-r-4={borderRightBold}
      class:border-b={borderBottom}
-     class:border-b-4={borderBottomBold}
-     class:unsolvable-number={unsolvableNumber}
-     class:wrong-number={wrongNumber}>
+     class:border-b-4={borderBottomBold}>
 
 	{#if !disabled}
 		<div class="cell-inner"
@@ -37,9 +34,7 @@
 		     class:selected={selected}
 		     class:same-area={sameArea}
 		     class:same-number={sameNumber}
-		     class:conflicting-number={conflictingNumber}
-		     class:unsolvable-number={unsolvableNumber}
-		     class:wrong-number={wrongNumber}>
+		     class:conflicting-number={conflictingNumber}>
 
 			<button class="cell-btn" on:click={cursor.set(cellX - 1, cellY - 1)}>
 				{#if candidates}
@@ -123,9 +118,5 @@
 
 	.conflicting-number {
 		@apply text-red-600;
-	}
-
-	.wrong-number {
-		@apply border-2 border-red-500 bg-red-200;
 	}
 </style>
