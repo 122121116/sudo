@@ -1,10 +1,20 @@
 <script>
+	import { onMount } from 'svelte';
 	import game from '@sudoku/game';
 	import { validateSencode } from '@sudoku/sencode';
 	import { modal } from '@sudoku/stores/modal';
 	import { slide, fade } from 'svelte/transition';
 	import { DIFFICULTIES, DROPDOWN_DURATION, DIFFICULTY_CUSTOM } from '@sudoku/constants';
 	import { difficulty } from '@sudoku/stores/difficulty';
+
+	let allExamples = {};
+	let exampleNames = [];
+
+	onMount(async () => {
+		const res = await fetch('/all_sudoku_examples.json');
+		allExamples = await res.json();
+		exampleNames = Object.keys(allExamples);
+	});
 
 	let dropdownVisible = false;
 
@@ -59,28 +69,43 @@
 		dropdownVisible = false;
 		game.pause();
 
-		try {
-			// 显示加载提示
+		// 等待数据加载
+		if (exampleNames.length === 0) {
 			modal.show('confirm', {
-				title: '获取数独题目',
-				text: '正在从SudokuWiki获取今日数独题目...',
+				title: '加载中',
+				text: '正在加载题库，请稍候...',
 				button: '确定',
 				onHide: game.resume
 			});
+			return;
+		}
 
-			// 调用获取函数
-			await game.getFromWeb();
+		// 选择题目名
+		let selected = null;
+		await new Promise((resolve) => {
+			modal.show('prompt', {
+				title: '选择数独题目',
+				text: '请选择一个数独题目名称：',
+				options: exampleNames,
+				button: '确定',
+				onHide: game.resume,
+				callback: (value) => {
+					selected = value;
+					resolve();
+				}
+			});
+		});
+		if (!selected) return;
 
-			// 成功提示
+		try {
+			await game.getFromWeb(selected);
 			modal.show('confirm', {
 				title: '获取成功',
-				text: '已成功从SudokuWiki获取今日数独题目！',
+				text: `已选择题目：${selected}`,
 				button: '开始游戏',
 				onHide: game.resume
 			});
-
 		} catch (error) {
-			// 错误提示
 			modal.show('confirm', {
 				title: '获取失败',
 				text: `获取数独题目失败：${error.message}`,
@@ -141,7 +166,7 @@
 
 				<span class="align-middle">Enter Code</span>
 			</a>
-			<a class="dropdown-item" on:click|preventDefault={handleSudokuWeb} href="#" title="Get Sudoku from Web">
+			<a class="dropdown-item" on:click|preventDefault={handleSudokuWeb} href="#" title="Get Sudoku from Lib">
 				<svg class="icon-solid" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
 					<path d="M12 4v1H8V4a4 4 0 018 0v1a4 4 0 01-8 0z" />
 					<path fill-rule="evenodd" d="M4 8a4 4 0 014-4h4a4 4 0 014 4v8a4 4 0 01-4 4H8a4 4 0 01-4-4V8zm4-2a2 2 0 00-2 2v8a2 2 0 002 2h4a2 2 0 002-2V8a2 2 0 00-2-2H8z" clip-rule="evenodd" />

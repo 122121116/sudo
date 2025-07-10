@@ -1,0 +1,46 @@
+Traceback (most recent call last):
+  File "c:\Users\asus\Desktop\sudo\sudoku1\web.py", line 108, in <module>
+    fetch_all_sudoku()
+  File "c:\Users\asus\Desktop\sudo\sudoku1\web.py", line 92, in fetch_all_sudoku
+    select_elem = WebDriverWait(driver, 20).until(
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\asus\AppData\Local\Programs\Python\Python312\Lib\site-packages\selenium\webdriver\support\wait.py", line 96, in until
+    value = method(self._driver)
+            ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\asus\AppData\Local\Programs\Python\Python312\Lib\site-packages\selenium\webdriver\support\expected_conditions.py", line 84, in _predicate
+    return driver.find_element(*locator)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\asus\AppData\Local\Programs\Python\Python312\Lib\site-packages\selenium\webdriver\remote\webdriver.py", line 741, in find_element
+    return self.execute(Command.FIND_ELEMENT, {"using": by, "value": value})["value"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\asus\AppData\Local\Programs\Python\Python312\Lib\site-packages\selenium\webdriver\remote\webdriver.py", line 347, in execute
+    self.error_handler.check_response(response)
+  File "C:\Users\asus\AppData\Local\Programs\Python\Python312\Lib\site-packages\selenium\webdriver\remote\errorhandler.py", line 229, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.NoSuchWindowException: Message: no such window: target window already closed
+from unknown error: web view not found
+  (Session info: MicrosoftEdge=138.0.3351.77)
+Stacktrace:
+	GetHandleVerifier [0x0xead593+37219]
+	(No symbol) [0x0xd5a716]
+	(No symbol) [0x0xb251ce]
+	(No symbol) [0x0xb0dc45]
+	(No symbol) [0x0xb79150]
+	(No symbol) [0x0xb8831d]
+	(No symbol) [0x0xb724f6]
+	(No symbol) [0x0xb53327]
+	(No symbol) [0x0xb52723]
+	(No symbol) [0x0xb53144]
+	sqlite3_dbdata_init [0x0xf9a89c+518364]
+	sqlite3_dbdata_init [0x0x1081ab0+1465072]
+	sqlite3_dbdata_init [0x0x10813e5+1463333]
+	sqlite3_dbdata_init [0x0x10728ec+1403180]
+	sqlite3_dbdata_init [0x0x10822d2+1467154]
+	(No symbol) [0x0xd71d9d]
+	(No symbol) [0x0xd65108]
+	(No symbol) [0x0xd652fb]
+	(No symbol) [0x0xd4a649]
+	BaseThreadInitThunk [0x0x765b7ba9+25]
+	RtlInitializeExceptionChain [0x0x77a5c3ab+107]
+	RtlClearBits [0x0x77a5c32f+191]
+
