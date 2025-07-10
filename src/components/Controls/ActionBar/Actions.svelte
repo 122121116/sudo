@@ -8,6 +8,7 @@
     import { gamePaused } from '@sudoku/stores/game';
     import { modal } from '@sudoku/stores/modal';
     import { history } from '@sudoku/stores/history';
+    import { invalidCells } from '@sudoku/stores/grid'; // 新增：引入 invalidCells
 
     import { strategies, findNextHint } from '@sudoku/stores/hints';
     import { backtrack } from '@sudoku/stores/backtrack';
@@ -22,24 +23,36 @@
 		userGrid.redo(candidates);
 	}
 
+    function getCleanUserGrid(userGrid, invalidCells) {
+      const cleanGrid = userGrid.map(row => [...row]);
+      for (const cell of invalidCells) {
+        const [x, y] = cell.split(',').map(Number);
+        cleanGrid[y][x] = 0;
+      }
+      return cleanGrid;
+    }
+
     function handleHint() {
         if (!hintsAvailable) return;
         try {
             const userGridData = [...$userGrid];
             let hint;
 
+            // 新增：净化 userGrid，避免错误答案影响提示
+            const cleanGrid = getCleanUserGrid(userGridData, $invalidCells);
+
             // 检查是否有选中格子
             if ($cursor.x !== null && $cursor.y !== null) {
                 // 如果选中的格子已有数字，直接寻找下一个可提示的格子
-                if (userGridData[$cursor.y][$cursor.x] !== 0) {
-                    hint = findNextHint(userGridData, null, null);
+                if (cleanGrid[$cursor.y][$cursor.x] !== 0) {
+                    hint = findNextHint(cleanGrid, null, null);
                 } else {
                     // 获取选中格子的提示
-                    hint = findNextHint(userGridData, $cursor.x, $cursor.y);
+                    hint = findNextHint(cleanGrid, $cursor.x, $cursor.y);
                 }
             } else {
                 // 没有选中格子，自动寻找可填入答案的格子
-                hint = findNextHint(userGridData, null, null);
+                hint = findNextHint(cleanGrid, null, null);
             }
             if (hint) {
                 // 移动光标到提示的格子

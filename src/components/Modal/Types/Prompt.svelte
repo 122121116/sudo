@@ -16,16 +16,7 @@
 	<label for="prompt-input" class="text-lg mb-4">{data.text}</label>
 {/if}
 
-{#if data.options}
-	<select class="input mb-5" id="prompt-select" bind:value>
-		<option value="" disabled selected>请选择</option>
-		{#each data.options as option}
-			<option value={option}>{option}</option>
-		{/each}
-	</select>
-{:else}
-	<input class="input mb-5" id="prompt-input" name="prompt-input" class:font-mono={data.fontMono} bind:value type="text">
-{/if}
+<input class="input mb-5" id="prompt-input" name="prompt-input" class:font-mono={data.fontMono} bind:value type="text">
 
 <div class="flex justify-end">
 	<button class="btn btn-small mr-3" on:click={hideModal}>Cancel</button>
