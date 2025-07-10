@@ -55,6 +55,41 @@
 		});
 	}
 
+	async function handleSudokuWeb() {
+		dropdownVisible = false;
+		game.pause();
+
+		try {
+			// 显示加载提示
+			modal.show('confirm', {
+				title: '获取数独题目',
+				text: '正在从SudokuWiki获取今日数独题目...',
+				button: '确定',
+				onHide: game.resume
+			});
+
+			// 调用获取函数
+			await game.getFromWeb();
+
+			// 成功提示
+			modal.show('confirm', {
+				title: '获取成功',
+				text: '已成功从SudokuWiki获取今日数独题目！',
+				button: '开始游戏',
+				onHide: game.resume
+			});
+
+		} catch (error) {
+			// 错误提示
+			modal.show('confirm', {
+				title: '获取失败',
+				text: `获取数独题目失败：${error.message}`,
+				button: '确定',
+				onHide: game.resume
+			});
+		}
+	}
+
 	function showDropdown() {
 		dropdownVisible = true;
 		game.pause();
@@ -105,6 +140,13 @@
 				</svg>
 
 				<span class="align-middle">Enter Code</span>
+			</a>
+			<a class="dropdown-item" on:click|preventDefault={handleSudokuWeb} href="#" title="Get Sudoku from Web">
+				<svg class="icon-solid" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+					<path d="M12 4v1H8V4a4 4 0 018 0v1a4 4 0 01-8 0z" />
+					<path fill-rule="evenodd" d="M4 8a4 4 0 014-4h4a4 4 0 014 4v8a4 4 0 01-4 4H8a4 4 0 01-4-4V8zm4-2a2 2 0 00-2 2v8a2 2 0 002 2h4a2 2 0 002-2V8a2 2 0 00-2-2H8z" clip-rule="evenodd" />
+				</svg>
+				<span class="align-middle">Get from Web</span>
 			</a>
 		</div>
 	{/if}
