@@ -9,6 +9,7 @@
 
 	let allExamples = {};
 	let exampleNames = [];
+	let selectedExampleName = '';
 
 	onMount(async () => {
 		const res = await fetch('/all_sudoku_examples.json');
@@ -80,13 +81,13 @@
 			return;
 		}
 
-		// 选择题目名
+		// 弹窗下拉菜单选择题目
 		let selected = null;
 		await new Promise((resolve) => {
 			modal.show('prompt', {
 				title: '选择数独题目',
 				text: '请选择一个数独题目名称：',
-				options: exampleNames,
+				options: exampleNames, // 传递选项
 				button: '确定',
 				onHide: game.resume,
 				callback: (value) => {
@@ -99,12 +100,11 @@
 
 		try {
 			await game.getFromWeb(selected);
-			modal.show('confirm', {
-				title: '获取成功',
-				text: `已选择题目：${selected}`,
-				button: '开始游戏',
-				onHide: game.resume
-			});
+			// 不再弹窗，直接显示选中的题目
+			dropdownVisible = false;
+			selectedExampleName = selected;
+			difficulty.setCustom();
+			
 		} catch (error) {
 			modal.show('confirm', {
 				title: '获取失败',
@@ -174,6 +174,10 @@
 				<span class="align-middle">Get from Web</span>
 			</a>
 		</div>
+	{/if}
+
+	{#if $difficulty === DIFFICULTY_CUSTOM}
+		<div>Select: {selectedExampleName}</div>
 	{/if}
 </div>
 
