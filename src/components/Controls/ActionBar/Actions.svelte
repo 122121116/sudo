@@ -7,9 +7,7 @@
     import { settings } from '@sudoku/stores/settings';
     import { gamePaused } from '@sudoku/stores/game';
     import { modal } from '@sudoku/stores/modal';
-    import { history } from '@sudoku/stores/history';
-    import { invalidCells } from '@sudoku/stores/grid'; // 新增：引入 invalidCells
-
+    import { invalidCells } from '@sudoku/stores/grid'; 
     import { strategies, findNextHint } from '@sudoku/stores/hints';
     import { backtrack } from '@sudoku/stores/backtrack';
     $: hintsAvailable = $hints > 0;

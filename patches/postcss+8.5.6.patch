@@ -1,0 +1,13 @@
+diff --git a/node_modules/postcss/lib/lazy-result.js b/node_modules/postcss/lib/lazy-result.js
+index 1ea52b8..bdaafc3 100644
+--- a/node_modules/postcss/lib/lazy-result.js
++++ b/node_modules/postcss/lib/lazy-result.js
+@@ -504,7 +504,7 @@ class LazyResult {
+       if (event === CHILDREN) {
+         if (node.nodes && node.nodes.length) {
+           node[isClean] = true
+-          visit.iterator = node.getIterator()
++          visit.iterator = 0
+         }
+         return
+       } else if (this.listeners[event]) {
