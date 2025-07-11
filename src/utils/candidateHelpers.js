@@ -31,3 +31,35 @@ export const clearCandidates = (position) => {
     // 更新候选值状态
     candidates.set(newCandidates);
 };
+
+// 游戏胜利检查函数
+export const checkGameWin = (userGrid, invalidCells, wrongCells) => {
+    // 检查是否所有格子都已填写
+    let isComplete = true;
+    for (let y = 0; y < userGrid.length; y++) {
+        for (let x = 0; x < userGrid[y].length; x++) {
+            if (userGrid[y][x] === 0) {
+                isComplete = false;
+                break;
+            }
+        }
+        if (!isComplete) break;
+    }
+    // 如果游戏完成且没有错误，直接弹出胜利弹窗
+    if (isComplete) {
+        const hasErrors = invalidCells.length > 0 || wrongCells.length > 0;
+        if (!hasErrors) {
+            // 先关闭其他弹窗再弹出胜利弹窗
+            import('@sudoku/stores/modal').then(({ modal }) => {
+                modal.hide();
+                setTimeout(() => {
+                    modal.show('gameover');
+                }, 50);
+            });
+            // 也可以设置gameWon为true（如果有用到）
+            import('@sudoku/stores/game').then(({ gameWon }) => {
+                gameWon.set(true);
+            });
+        }
+    }
+};
