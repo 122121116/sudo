@@ -28,8 +28,7 @@
      class:border-r-4={borderRightBold}
      class:border-b={borderBottom}
      class:border-b-4={borderBottomBold}
-     class:unsolvable-number={unsolvableNumber}
-     class:wrong-number={wrongNumber}>
+     class:unsolvable-number={unsolvableNumber}>
 
 	{#if !disabled}
 		<div class="cell-inner"
@@ -38,8 +37,7 @@
 		     class:same-area={sameArea}
 		     class:same-number={sameNumber}
 		     class:conflicting-number={conflictingNumber}
-		     class:unsolvable-number={unsolvableNumber}
-		     class:wrong-number={wrongNumber}>
+		     class:unsolvable-number={unsolvableNumber}>
 
 			<button class="cell-btn" on:click={cursor.set(cellX - 1, cellY - 1)}>
 				{#if candidates}
@@ -123,9 +121,5 @@
 
 	.conflicting-number {
 		@apply text-red-600;
-	}
-
-	.wrong-number {
-		@apply border-2 border-red-500 bg-red-200;
 	}
 </style>
