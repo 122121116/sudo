@@ -7,6 +7,8 @@
 	// TODO: Improve keyboardDisabled
 	import { keyboardDisabled } from '@sudoku/stores/keyboard';
 	import { backtrack } from '@sudoku/stores/backtrack';  // 添加这一行
+	import { invalidCells, wrongCells } from '@sudoku/stores/grid';
+	import { checkGameWin } from '../../utils/candidateHelpers';
 
 	function handleKeyButton(num) {
 		if (!$keyboardDisabled) {
@@ -44,6 +46,11 @@
 				userGrid.set(position, num);
 			}
 		}
+		
+		// 检查游戏是否完成
+		setTimeout(() => {
+			checkGameWin($userGrid, $invalidCells, $wrongCells);
+		}, 0);
 	}
 
 	function handleKey(e) {

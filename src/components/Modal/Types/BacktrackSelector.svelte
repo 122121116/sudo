@@ -1,10 +1,11 @@
 <script>
     import { backtrack } from '@sudoku/stores/backtrack';
-    import { userGrid, grid } from '@sudoku/stores/grid'; // 添加 grid 导入
+    import { userGrid, grid, invalidCells, wrongCells } from '@sudoku/stores/grid'; // 添加 grid 导入
     import { cursor } from '@sudoku/stores/cursor';
     import { candidates } from '@sudoku/stores/candidates';
     import { history } from '@sudoku/stores/history';  // 添加这一行
     import { get } from 'svelte/store';
+    import { checkGameWin } from '../../../utils/candidateHelpers';
     export let data = {};
     export let hideModal;
 
@@ -88,6 +89,11 @@
             userGrid.set(position, Number(value));
 
             hideModal();
+            
+            // 延迟检测，确保store已更新
+            setTimeout(() => {
+                checkGameWin($userGrid, $invalidCells, $wrongCells);
+            }, 0);
         }
     }
 </script>
