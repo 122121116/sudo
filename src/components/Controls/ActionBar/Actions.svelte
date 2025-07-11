@@ -9,11 +9,11 @@
 	import { gameMode } from '@sudoku/game';
 	import { gamePaused } from '@sudoku/stores/game';
 	import game from '@sudoku/game';
-  	import { GAME_MODES } from '@sudoku/constants';
+	import { GAME_MODES } from '@sudoku/constants';
 	import { modal } from '@sudoku/stores/modal'
 	import { get } from 'svelte/store';
-	import { solveSudoku } from '@sudoku/sudoku';
-	  
+	import solve from '@mattflow/sudoku-solver';
+	
 	$: hintsAvailable = $hints > 0;
 
 	function handleHint() {
@@ -21,38 +21,35 @@
 			if ($candidates.hasOwnProperty($cursor.x + ',' + $cursor.y)) {
 				candidates.clear($cursor);
 			}
-
+			
 			userGrid.applyHint($cursor);
 		}
 	}
 
+
+	function handleClearCreator() {
+		modal.show('confirm', {
+			title: 'Clear Board',
+			text: 'Are you sure you want to clear all numbers? This cannot be undone.',
+			button: 'Clear',
+			callback: () => {
+				userGrid.setGrid(Array(9).fill().map(() => Array(9).fill(0)));
+			}
+		});
+	}
+	
+
 	function handleFinishCreator() {
 		const currentUserGrid = get(userGrid);
-		// 0. 检查已填数字数量
+		// 1. 检查已填数字数量
 		const filledCount = currentUserGrid.flat().filter(n => n > 0).length;
 		if (filledCount < 17) {
 			modal.show('confirm', {
 				title: 'Too Few Clues',
 				text: 'A valid Sudoku puzzle must have at least 17 filled cells to ensure a unique solution. Please add more clues.',
 				button: 'Continue',
+				hideCancel: true,
 				callback: () => {},
-				secondary: {
-					text: 'New Game',
-					action: () => { location.reload(); }
-				}
-			});
-			return;
-		}
-		// 1. 检查是否为空盘
-		const isEmpty = currentUserGrid.every(row => row.every(cell => cell === 0));
-		if (isEmpty) {
-			modal.show('confirm', {
-				title: 'Empty Board',
-				text: 'The board is empty. Please create a valid Sudoku puzzle.',
-				button: 'Continue',
-				callback: () => {
-					// 返回继续编辑
-				},
 				secondary: {
 					text: 'New Game',
 					action: () => { location.reload(); }
@@ -62,13 +59,13 @@
 		}
 
 		// 2. 检查是否有冲突
-
 		const invalid = get(invalidCells);
 		if (invalid.length > 0) {
 			modal.show('confirm', {
 				title: 'Conflict Detected',
 				text: 'There are conflicts in your Sudoku (duplicate numbers in row, column, or box).',
 				button: 'Continue',
+				hideCancel: true,
 				callback: () => {},
 				secondary: {
 					text: 'New Game',
@@ -79,45 +76,59 @@
 		}
 
 		// 3. 检查是否有解且唯一
+		// 用@mattflow/sudoku-solver检测唯一解
+		const flatGrid = currentUserGrid.flat();
+		const puzzleString = flatGrid.map(n => n === 0 ? '.' : n).join('');
 		let solutionCount = 0;
-		function countSolutions(grid) {
-			// 递归回溯计数所有解
-			for (let y = 0; y < 9; y++) {
-				for (let x = 0; x < 9; x++) {
-					if (grid[y][x] === 0) {
-						for (let n = 1; n <= 9; n++) {
-							if (isValid(grid, x, y, n)) {
-								grid[y][x] = n;
-								countSolutions(grid);
-								grid[y][x] = 0;
+		let firstSolution = null;
+		try {
+			// 第一次求解，获得一个解
+			const sol1 = solve(puzzleString, { outputArray: true, hintCheck: false });
+			if (!sol1 || sol1.length !== 81) {
+				modal.show('confirm', {
+					title: 'No Solution',
+					text: 'The current Sudoku has no solution. Please check your puzzle.',
+					button: 'Continue',
+					hideCancel: true,
+					callback: () => {},
+					secondary: {
+						text: 'New Game',
+						action: () => { location.reload(); }
+					}
+				});
+				return;
+			}
+			firstSolution = sol1;
+			solutionCount = 1;
+			// 尝试找到第二个不同的解
+			// 找到第一个空格，尝试填入不同于第一个解的数字
+			for (let i = 0; i < 81; i++) {
+				if (flatGrid[i] === 0) {
+					for (let n = 1; n <= 9; n++) {
+						if (n !== sol1[i]) {
+							const alt = [...flatGrid];
+							alt[i] = n;
+							const altString = alt.map(x => x === 0 ? '.' : x).join('');
+							const sol2 = solve(altString, { outputArray: true, hintCheck: false });
+							if (sol2 && sol2.length === 81) {
+								// 找到第二个解
+								solutionCount = 2;
+								break;
 							}
 						}
-						return;
 					}
+					break;
 				}
 			}
-			solutionCount++;
+		} catch (e) {
+			solutionCount = 0;
 		}
-		function isValid(grid, x, y, n) {
-			for (let i = 0; i < 9; i++) {
-				if (grid[y][i] === n || grid[i][x] === n) return false;
-			}
-			const boxX = Math.floor(x / 3) * 3;
-			const boxY = Math.floor(y / 3) * 3;
-			for (let i = 0; i < 3; i++) {
-				for (let j = 0; j < 3; j++) {
-					if (grid[boxY + i][boxX + j] === n) return false;
-				}
-			}
-			return true;
-		}
-		const gridCopy = currentUserGrid.map(row => row.slice());
-		countSolutions(gridCopy);
 		if (solutionCount === 0) {
 			modal.show('confirm', {
 				title: 'No Solution',
 				text: 'The current Sudoku has no solution. Please check your puzzle.',
 				button: 'Continue',
+				hideCancel: true,
 				callback: () => {},
 				secondary: {
 					text: 'New Game',
@@ -131,6 +142,7 @@
 				title: 'Multiple Solutions',
 				text: 'The current Sudoku has multiple solutions. Please make sure your puzzle has a unique solution.',
 				button: 'Continue',
+				hideCancel: true,
 				callback: () => {},
 				secondary: {
 					text: 'New Game',
@@ -150,6 +162,7 @@
 			}
 		});
 	}
+
 
 </script>
 
@@ -186,6 +199,12 @@
 	</button>
 
 	{#if $gameMode === GAME_MODES.CREATE}
+		<button class="btn btn-round btn-badge mr-2" on:click={handleClearCreator} title="Clear Board">
+			<svg class="icon-outline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+			</svg>
+			<span class="badge">Clear</span>
+		</button>
 		<button class="btn btn-round btn-badge" on:click={handleFinishCreator} title="Finish Creating">
 			<svg class="icon-outline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />

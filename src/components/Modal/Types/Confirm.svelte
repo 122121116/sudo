@@ -15,7 +15,9 @@
 {/if}
 
 <div class="flex justify-end">
-	<button class="btn btn-small mr-3" on:click={hideModal}>Cancel</button>
+	{#if !data.hideCancel}
+		<button class="btn btn-small mr-3" on:click={hideModal}>Cancel</button>
+	{/if}
 	<button class="btn btn-small btn-primary mr-3" on:click={handleContinue}>{data.button || 'Okay'}</button>
 	{#if data.secondary}
 		<button class="btn btn-small btn-primary" on:click={() => { data.secondary.action(); hideModal(); }}>{data.secondary.text}</button>
