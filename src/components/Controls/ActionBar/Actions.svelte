@@ -1,6 +1,6 @@
 <script>
     import { candidates } from '@sudoku/stores/candidates';
-    import { userGrid, invalidCells, wrongCells } from '@sudoku/stores/grid';
+    import { userGrid, invalidCells } from '@sudoku/stores/grid';
     import { cursor } from '@sudoku/stores/cursor';
     import { hints } from '@sudoku/stores/hints';
     import { notes } from '@sudoku/stores/notes';
@@ -9,7 +9,6 @@
     import { modal } from '@sudoku/stores/modal';
     import { strategies, findNextHint } from '@sudoku/stores/hints';
     import { backtrack } from '@sudoku/stores/backtrack';
-    import { checkGameWin } from '../../../utils/candidateHelpers';
     import { get } from 'svelte/store';
     import { gameMode } from '@sudoku/game';
     import { GAME_MODES } from '@sudoku/constants';
@@ -72,7 +71,24 @@
                         
                         // 延迟检测，确保store已更新
                         setTimeout(() => {
-                            checkGameWin($userGrid, $invalidCells, $wrongCells);
+                            // 删除wrongCells相关导入和checkGameWin调用中的参数
+                            // 检查游戏是否胜利
+                            const currentUserGrid = get(userGrid);
+                            const currentInvalidCells = get(invalidCells);
+                            const currentWrongCells = get(wrongCells); // 假设 wrongCells 仍然需要导入
+
+                            // 检查游戏是否胜利
+                            const isGameWon = checkGameWin(currentUserGrid, currentInvalidCells, currentWrongCells);
+                            if (isGameWon) {
+                                modal.show('confirm', {
+                                    title: 'Congratulations!',
+                                    text: 'You have solved the Sudoku puzzle!',
+                                    button: 'New Game',
+                                    callback: () => {
+                                        game.finishGame();
+                                    }
+                                });
+                            }
                         }, 0);
                         
                         // 显示策略提示

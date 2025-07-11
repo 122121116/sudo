@@ -1,6 +1,6 @@
 <script>
     import { backtrack } from '@sudoku/stores/backtrack';
-    import { userGrid, grid, invalidCells, wrongCells } from '@sudoku/stores/grid'; // 添加 grid 导入
+    import { userGrid, grid, invalidCells} from '@sudoku/stores/grid'; // 添加 grid 导入
     import { cursor } from '@sudoku/stores/cursor';
     import { candidates } from '@sudoku/stores/candidates';
     import { history } from '@sudoku/stores/history';  // 添加这一行
@@ -92,7 +92,7 @@
             
             // 延迟检测，确保store已更新
             setTimeout(() => {
-                checkGameWin($userGrid, $invalidCells, $wrongCells);
+                checkGameWin($userGrid, $invalidCells);
             }, 0);
         }
     }

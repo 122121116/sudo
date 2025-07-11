@@ -33,7 +33,7 @@ export const clearCandidates = (position) => {
 };
 
 // 游戏胜利检查函数
-export const checkGameWin = (userGrid, invalidCells, wrongCells) => {
+export const checkGameWin = (userGrid, invalidCells) => {
     // 检查是否所有格子都已填写
     let isComplete = true;
     for (let y = 0; y < userGrid.length; y++) {
@@ -47,7 +47,7 @@ export const checkGameWin = (userGrid, invalidCells, wrongCells) => {
     }
     // 如果游戏完成且没有错误，直接弹出胜利弹窗
     if (isComplete) {
-        const hasErrors = invalidCells.length > 0 || wrongCells.length > 0;
+        const hasErrors = invalidCells.length > 0;
         if (!hasErrors) {
             // 先关闭其他弹窗再弹出胜利弹窗
             import('@sudoku/stores/modal').then(({ modal }) => {

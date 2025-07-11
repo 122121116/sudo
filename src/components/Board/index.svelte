@@ -1,7 +1,7 @@
 <script>
 	import { BOX_SIZE, GAME_MODES } from '@sudoku/constants';
 	import { gamePaused } from '@sudoku/stores/game';
-	import { grid, userGrid, invalidCells, wrongCells } from '@sudoku/stores/grid';
+	import { grid, userGrid, invalidCells } from '@sudoku/stores/grid';
 	import { settings } from '@sudoku/stores/settings';
 	import { cursor } from '@sudoku/stores/cursor';
 	import { candidates } from '@sudoku/stores/candidates';
@@ -49,8 +49,7 @@
 					      userNumber={$grid[y][x] === 0 && value !== 0}
 					      sameArea={$settings.highlightCells && !isSelected($cursor, x, y) && isSameArea($cursor, x, y)}
 					      sameNumber={$settings.highlightSame && value && !isSelected($cursor, x, y) && getValueAtCursor($userGrid, $cursor) === value}
-					      conflictingNumber={$grid[y][x] === 0 && $invalidCells.includes(x + ',' + y)}
-					      wrongNumber={$gameMode === GAME_MODES.CREATE ? false : $wrongCells.includes(x + ',' + y)} />
+					      conflictingNumber={$grid[y][x] === 0 && $invalidCells.includes(x + ',' + y)} />
 				{/each}
 			{/each}
 
