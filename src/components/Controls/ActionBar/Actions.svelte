@@ -1,15 +1,15 @@
 <script>
     import { candidates } from '@sudoku/stores/candidates';
-    import { userGrid} from '@sudoku/stores/grid';
+    import { userGrid, invalidCells, wrongCells } from '@sudoku/stores/grid';
     import { cursor } from '@sudoku/stores/cursor';
     import { hints } from '@sudoku/stores/hints';
     import { notes } from '@sudoku/stores/notes';
     import { settings } from '@sudoku/stores/settings';
     import { gamePaused } from '@sudoku/stores/game';
     import { modal } from '@sudoku/stores/modal';
-    import { invalidCells } from '@sudoku/stores/grid'; 
     import { strategies, findNextHint } from '@sudoku/stores/hints';
     import { backtrack } from '@sudoku/stores/backtrack';
+    import { checkGameWin } from '../../../utils/candidateHelpers';
     $: hintsAvailable = $hints > 0;
 
 
@@ -64,7 +64,12 @@
                     if (hint.value !== null && hint.value !== undefined) {
                         // 填入答案
                         userGrid.set({x: hint.x, y: hint.y}, hint.value);
-
+                        
+                        // 延迟检测，确保store已更新
+                        setTimeout(() => {
+                            checkGameWin($userGrid, $invalidCells, $wrongCells);
+                        }, 0);
+                        
                         // 显示策略提示
                         modal.show('confirm', {
                             title: strategies[hint.strategy]?.name || "Hint",
